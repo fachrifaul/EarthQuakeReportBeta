@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- warna untuk detail earthquake di list item -->
+    <color name="textColorEartquakeDetails">#B4BAC0</color>
+
+    <!-- warna untuk primary earthquake di list item -->
+    <color name="textColorEartquakePrimary">#2B3D4D</color>
+
+    <!-- untuk mangitude gempa 0 - 2  -->
+    <color name="magnitude1">#4A7BA7</color>
+
+    <!-- untuk mangitude gempa 2 - 3 -->
+    <color name="magnitude2">#04B4B3</color>
+
+    <!-- untuk mangitude gempa 3 - 4 -->
+    <color name="magnitude3">#10CAC9</color>
+
+    <!-- untuk mangitude gempa 4 - 5 -->
+    <color name="magnitude4">#F5A623</color>
+
+    <!-- untuk mangitude gempa 5 - 6 -->
+    <color name="magnitude5">#FF7D50</color>
+
+    <!-- untuk mangitude gempa 6 - 7 -->
+    <color name="magnitude6">#FC6644</color>
+
+    <!-- untuk mangitude gempa 7 - 8 -->
+    <color name="magnitude7">#E75F40</color>
+
+    <!-- untuk mangitude gempa 8 - 9 -->
+    <color name="magnitude8">#E13A20</color>
+
+    <!-- untuk mangitude gempa 9 - 10 -->
+    <color name="magnitude9">#D93218</color>
+
+    <!-- untuk mangitude gempa 10 - 11 -->
+    <color name="magnitude10">#C03823</color>
+
+</resources>
