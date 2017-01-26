@@ -7,12 +7,61 @@
     android:layout_height="match_parent"
     tools:context="com.hidayatasep.makersinstitute.earthquakereport.MainActivity">
 
-   <ListView
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:id="@+id/list"
-       >
-   </ListView>
+    <!-- Empty view is only visible when the list has no items -->
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/no_eartquake"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- No Connection view is only visible when No internet connection -->
+    <TextView
+        android:id="@+id/noInternetConnectionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/no_internet_connection"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:visibility="invisible"
+        tools:visibility="visible"
+
+        />
+
+    <!-- No Connection button is only visible when No internet connection -->
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/noInternetConnectionLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@color/magnitude5"
+        android:text="@string/refresh"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
+
+    <!-- Loading Indocatior for user feedback between queries to usgs -->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
 
 
 </RelativeLayout>
