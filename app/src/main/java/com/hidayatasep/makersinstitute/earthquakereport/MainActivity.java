@@ -32,16 +32,6 @@ public class MainActivity extends AppCompatActivity{
     //list eartquake
     ListView earthquakeListView;
 
-    //view for no data
-    TextView emptyEartquake;
-
-    //view for no connecton
-    TextView noInternetConnectionLabel;
-    Button refreshButton;
-
-    //loading view
-    ProgressBar loadingProgress;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,96 +69,18 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        emptyEartquake = (TextView) findViewById(R.id.empty_view);
-
-        refreshButton = (Button) findViewById(R.id.refreshButton);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                refreshData();
-            }
-        });
-        noInternetConnectionLabel = (TextView) findViewById(R.id.noInternetConnectionLabel);
-        loadingProgress = (ProgressBar) findViewById(R.id.loadingIndicator);
+        new DownloadTaskEartQuake().execute();
 
     }
 
-    private void refreshData() {
-        showLoadingIndicator();
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+    private class DownloadTaskEartQuake extends AsyncTask<Void,Void,ArrayList<EarthQuake>>{
 
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
-            String url = getLinkEartQuake();
-            new DownloadTaskEartQuake().execute(url);
-        }else{
-            showNoInternetView();
-        }
-    }
-
-    public void showLoadingIndicator(){
-        if(loadingProgress.getVisibility() == View.INVISIBLE){
-            loadingProgress.setVisibility(View.VISIBLE);
-            earthquakeListView.setVisibility(View.INVISIBLE);
-            emptyEartquake.setVisibility(View.INVISIBLE);
-            noInternetConnectionLabel.setVisibility(View.INVISIBLE);
-            refreshButton.setVisibility(View.INVISIBLE);
-            refreshButton.setEnabled(false);
-        }
-    }
-
-    public void showList(){
-        loadingProgress.setVisibility(View.INVISIBLE);
-        earthquakeListView.setVisibility(View.VISIBLE);
-    }
-
-    public void showEmptyData(){
-        loadingProgress.setVisibility(View.INVISIBLE);
-        emptyEartquake.setVisibility(View.VISIBLE);
-    }
-
-    public void showNoInternetView(){
-        loadingProgress.setVisibility(View.INVISIBLE);
-        noInternetConnectionLabel.setVisibility(View.VISIBLE);
-        refreshButton.setVisibility(View.VISIBLE);
-        refreshButton.setEnabled(true);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        refreshData();
-
-    }
-
-    private String getLinkEartQuake() {
-        SharedPreferences sharedPrefences = PreferenceManager.getDefaultSharedPreferences(this);
-        String minMagnitude = sharedPrefences.getString(
-                getString(R.string.setting_min_magnitude_key),
-                getString(R.string.setting_min_magnitude_default));
-        String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=" + minMagnitude +"&limit=30";
-        return url;
-    }
-
-
-    private class DownloadTaskEartQuake extends AsyncTask<String,Void,ArrayList<EarthQuake>>{
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            adapter.clear();
-        }
-
-        @Override
-        protected ArrayList<EarthQuake> doInBackground(String... urlString) {
+        protected ArrayList<EarthQuake> doInBackground(Void... voids) {
 
             //set up URL
-            URL url = QueryUtils.createURL(urlString[0]);
+            URL url = QueryUtils.createURL(USGS_REQUEST_URL);
 
             //membuat http request ke URL dan menerima response JSON
             String jsonResponse = null;
@@ -186,35 +98,12 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(ArrayList<EarthQuake> earthQuakes) {
             super.onPostExecute(earthQuakes);
-            //add eartquake ke list view
-            if(earthQuakes.isEmpty()){
-                showEmptyData();
-            }else{
-                showList();
-                for(int i = 0;i < earthQuakes.size(); i++){
-                    adapter.add(earthQuakes.get(i));
-                }
+            for(int i = 0;i < earthQuakes.size(); i++){
+                //add eartquake to list
+                adapter.add(earthQuakes.get(i));
             }
 
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.action_setting){
-            Intent intent= new Intent(this,PrefsActivity.class);
-            startActivity(intent);
-            return true;
-        }else if(id == R.id.action_refresh){
-            refreshData();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
