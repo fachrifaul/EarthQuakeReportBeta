@@ -6,6 +6,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +41,7 @@ public class QueryUtils {
 
 
     //metthod untuk mengkonvert data json dari USGS menjadi list
-    public static ArrayList<EarthQuake> extraEartquake(){
+    public static ArrayList<EarthQuake> extraEartquake(String responseJson){
 
         //membuat arraylist kosong
         ArrayList<EarthQuake> earthQuakes = new ArrayList<>();
@@ -41,7 +49,7 @@ public class QueryUtils {
         //parsing json
         try {
             //membuat json object
-            JSONObject root = new JSONObject(SAMPLE_JSON_RESPONSE);
+            JSONObject root = new JSONObject(responseJson);
             JSONArray features = root.getJSONArray("features");
 
             //membuat list dari data JSON
@@ -49,11 +57,19 @@ public class QueryUtils {
                 JSONObject earthQuake = features.getJSONObject(i);
                 JSONObject properties = earthQuake.getJSONObject("properties");
 
-                //get data
+                //get data magnitude
                 double mag = properties.getDouble("mag");
+
+                //get data tempat
                 String place = properties.getString("place");
+
+                //get data waktu
                 long time = properties.getLong("time");
-                earthQuakes.add(new EarthQuake(mag,place,time));
+
+                String url = properties.getString("url");
+
+                //get data url
+                earthQuakes.add(new EarthQuake(mag,place,time,url));
             }
         } catch (JSONException e) {
             //if an error , show log
@@ -63,6 +79,84 @@ public class QueryUtils {
 
         return earthQuakes;
 
+    }
+
+    //create url object from string
+    public static URL createURL(String stringUrl){
+        URL url = null;
+        try {
+            url = new URL(stringUrl);
+        } catch (MalformedURLException e) {
+            Log.e(TAG,e.toString());
+        }
+        return url;
+    }
+
+    //membuat http request dan me return data string dari USGS
+    public static String makeHttoRequest(URL url){
+        String jsonResponse = "";
+
+        //jika url null, maka tidak akan diproses
+        if(url == null){
+            return jsonResponse;
+        }
+
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+
+        try {
+            //open connection
+            urlConnection = (HttpURLConnection) url.openConnection();
+            //set maksimal waktu untuk mendapatkan data dari inter
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            //jika request suksess (response code 200)
+            //maka baca inputr stream dan parsing response
+            if (urlConnection.getResponseCode() == 200){
+                inputStream = urlConnection.getInputStream();
+                jsonResponse = readFromStream(inputStream);
+            }else{
+                Log.e(TAG,"Error response");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG,e.toString());
+        }finally {
+            if(urlConnection != null){
+                urlConnection.disconnect();
+            }
+            if(inputStream != null){
+                //clode input stream
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e(TAG,e.toString());
+                }
+            }
+        }
+
+        return jsonResponse;
+
+    }
+
+    //konversi input stream ke string yang memuat data json dari server
+    private static String readFromStream(InputStream inputStream) throws IOException {
+        StringBuilder output = new StringBuilder();
+        if(inputStream != null){
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String line = reader.readLine();
+            while (line != null){
+                output.append(line);
+                line = reader.readLine();
+            }
+        }
+        return output.toString();
     }
 
 }

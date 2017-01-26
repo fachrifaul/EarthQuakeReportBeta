@@ -15,6 +15,17 @@ public class EarthQuake {
     //time
     private long mTImeMillisecond;
 
+    //website url
+    private String mUrl;
+
+    //contuctor
+    public EarthQuake(double magnitude, String location, long TImeMillisecond, String url) {
+        mMagnitude = magnitude;
+        mLocation = location;
+        mTImeMillisecond = TImeMillisecond;
+        mUrl = url;
+    }
+
     public EarthQuake(double magnitude, String location, long TImeMillisecond) {
         mMagnitude = magnitude;
         mLocation = location;
@@ -43,5 +54,13 @@ public class EarthQuake {
 
     public void setTImeMillisecond(long TImeMillisecond) {
         mTImeMillisecond = TImeMillisecond;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
     }
 }
