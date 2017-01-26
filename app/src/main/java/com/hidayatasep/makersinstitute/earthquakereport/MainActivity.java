@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    //method to get data from server
     private void refreshData() {
         showLoadingIndicator();
         // Get a reference to the ConnectivityManager to check state of network connectivity
@@ -110,8 +111,11 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    //show progress bar
     public void showLoadingIndicator(){
         if(loadingProgress.getVisibility() == View.INVISIBLE){
+            //show progress bar
+            //and hide another view
             loadingProgress.setVisibility(View.VISIBLE);
             earthquakeListView.setVisibility(View.INVISIBLE);
             emptyEartquake.setVisibility(View.INVISIBLE);
@@ -121,16 +125,19 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    //method to show eartquake list and hide progress bar
     public void showList(){
         loadingProgress.setVisibility(View.INVISIBLE);
         earthquakeListView.setVisibility(View.VISIBLE);
     }
 
+    //method to show eartquake empty textview and hide progress bar
     public void showEmptyData(){
         loadingProgress.setVisibility(View.INVISIBLE);
         emptyEartquake.setVisibility(View.VISIBLE);
     }
 
+    //method to show no internet connection vie  and hide progress bar
     public void showNoInternetView(){
         loadingProgress.setVisibility(View.INVISIBLE);
         noInternetConnectionLabel.setVisibility(View.VISIBLE);
@@ -141,16 +148,19 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        // Get a reference to the ConnectivityManager to check state of network connectivity
+        //refresh data
         refreshData();
-
     }
 
+    //get link to get data from usgs
+    //use minimal magnitude from preferences
     private String getLinkEartQuake() {
+        //use min magnitude from preferences
         SharedPreferences sharedPrefences = PreferenceManager.getDefaultSharedPreferences(this);
         String minMagnitude = sharedPrefences.getString(
                 getString(R.string.setting_min_magnitude_key),
                 getString(R.string.setting_min_magnitude_default));
+        //return url
         String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=" + minMagnitude +"&limit=30";
         return url;
     }
@@ -161,6 +171,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            //clear data in list
             adapter.clear();
         }
 
@@ -186,16 +197,17 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(ArrayList<EarthQuake> earthQuakes) {
             super.onPostExecute(earthQuakes);
-            //add eartquake ke list view
+            //add eartquake to list view
             if(earthQuakes.isEmpty()){
+                //if no data show empty text view
                 showEmptyData();
             }else{
                 showList();
                 for(int i = 0;i < earthQuakes.size(); i++){
+                    //add eartquake to list
                     adapter.add(earthQuakes.get(i));
                 }
             }
-
         }
     }
 
